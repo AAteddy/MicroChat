@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MicroChatApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(MicroChatApplication.class, args);
+		System.out.println("MicroChat Application has started!");
 	}
 
 }
