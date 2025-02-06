@@ -10,6 +10,7 @@ import com.tedsaasfaha.MicroChat.model.Role;
 import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.repository.UserRepository;
 import com.tedsaasfaha.MicroChat.util.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -74,6 +75,23 @@ public class UserService {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequestDTO.email());
         final String accessToken = jwtUtil.generateAccessToken(userDetails);
         final String refreshToken = jwtUtil.generateRefreshToken(userDetails);
+
+        return new AuthResponseDTO(accessToken, refreshToken);
+    }
+
+    public AuthResponseDTO createAuthRefreshToken(AuthResponseDTO responseDTO) throws Exception {
+        String refreshToken = responseDTO.refreshToken();
+
+        // Validate refresh token
+        if (jwtUtil.validateToken(refreshToken))
+            throw new Exception("Invalid token.");
+
+        // extract username
+        String username = jwtUtil.extractUsername(refreshToken);
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        // Generate a new Access Token
+        String accessToken = jwtUtil.generateAccessToken(userDetails);
 
         return new AuthResponseDTO(accessToken, refreshToken);
     }
