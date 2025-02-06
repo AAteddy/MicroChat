@@ -9,6 +9,7 @@ import com.tedsaasfaha.MicroChat.service.UserService;
 import com.tedsaasfaha.MicroChat.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,15 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     private UserService userService;
 
     @PostMapping("/signup")
@@ -41,28 +33,24 @@ public class AuthController {
             @Valid @RequestBody UserRegistrationDTO registrationDTO
             ) {
 
+        if (userService.isExist(registrationDTO.email())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("User with the email already exist.");
+        }
+
         User user = userService.registerUser(registrationDTO);
-        return ResponseEntity.ok("User Registered Successfully.");
+        return ResponseEntity.ok("Successfully Registered User: " + user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(
+    public ResponseEntity<AuthResponseDTO> loginUser(
             @RequestBody AuthRequestDTO authRequestDTO
             ) throws Exception {
 
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            authRequestDTO.email(),
-                            authRequestDTO.password())
-            );
-        } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
-        }
-
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequestDTO.email());
-        final String jwt = jwtUtil.generateAccessToken(userDetails);
-
-        return ResponseEntity.ok(new AuthResponseDTO(jwt));
+        AuthResponseDTO response = userService.createAuthenticationToken(authRequestDTO);
+        return ResponseEntity.ok(response);
     }
+
+    // todo - refresh-token method endpoint
+
 }
