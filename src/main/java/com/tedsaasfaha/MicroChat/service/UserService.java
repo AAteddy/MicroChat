@@ -10,7 +10,6 @@ import com.tedsaasfaha.MicroChat.model.Role;
 import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.repository.UserRepository;
 import com.tedsaasfaha.MicroChat.util.JwtUtil;
-import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,13 +42,8 @@ public class UserService {
         return userRepository.findByEmail(email).isPresent();
     }
 
-    public User registerUser(UserRegistrationDTO registrationDTO) {
-        User user = new User();
-        user.setName(registrationDTO.name());
-        user.setEmail(registrationDTO.email());
-        user.setPassword(passwordEncoder.encode(registrationDTO.password()));
-        user.setRole(Role.USER); // Default User Role
-
+    public User registerUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
