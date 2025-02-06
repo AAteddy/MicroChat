@@ -4,6 +4,7 @@ package com.tedsaasfaha.MicroChat.controller;
 import com.tedsaasfaha.MicroChat.dto.AuthRequestDTO;
 import com.tedsaasfaha.MicroChat.dto.AuthResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserRegistrationDTO;
+import com.tedsaasfaha.MicroChat.model.Role;
 import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.service.UserService;
 import jakarta.validation.Valid;
@@ -32,8 +33,14 @@ public class AuthController {
                     .body("User with the email already exist.");
         }
 
-        User user = userService.registerUser(registrationDTO);
-        return ResponseEntity.ok("Successfully Registered User: " + user);
+        User user = new User();
+        user.setName(registrationDTO.name());
+        user.setEmail(registrationDTO.email());
+        user.setPassword(registrationDTO.password());
+        user.setRole(Role.USER); // Default User Role
+
+        User savedUser = userService.registerUser(user);
+        return ResponseEntity.ok("Successfully Registered User: " + savedUser);
     }
 
     @PostMapping("/login")
