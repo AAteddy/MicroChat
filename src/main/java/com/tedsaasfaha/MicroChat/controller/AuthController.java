@@ -1,3 +1,4 @@
+
 package com.tedsaasfaha.MicroChat.controller;
 
 
@@ -24,7 +25,7 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(
+    public ResponseEntity<?> signupUser(
             @Valid @RequestBody UserRegistrationDTO registrationDTO
             ) {
 
@@ -60,5 +61,5 @@ public class AuthController {
         AuthResponseDTO response = userService.createAuthRefreshToken(responseDTO);
         return ResponseEntity.ok(response);
     }
-
 }
+//
