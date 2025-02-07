@@ -7,7 +7,6 @@ import com.tedsaasfaha.MicroChat.dto.AuthResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserUpdateDTO;
 import com.tedsaasfaha.MicroChat.exception.ResourceNotFoundException;
-//import com.tedsaasfaha.MicroChat.mapper.UserMapper;
 import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.repository.UserRepository;
 import com.tedsaasfaha.MicroChat.util.JwtUtil;
@@ -100,6 +99,14 @@ public class UserServiceImpl implements UserService {
 
         return users.map(this::toUserResponseDTO);
     }
+
+    @Override
+    public Page<UserResponseDTO> getAllActiveUsers(Pageable pageable) {
+        Page<User> activeUsers = userRepository.findAllActiveUsers(pageable);
+
+        return activeUsers.map(this::toUserResponseDTO);
+    }
+
 
     private UserResponseDTO toUserResponseDTO(User user) {
         return new UserResponseDTO(

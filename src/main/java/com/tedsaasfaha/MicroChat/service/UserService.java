@@ -22,5 +22,7 @@ public interface UserService {
     AuthResponseDTO createAuthRefreshToken(AuthResponseDTO responseDTO) throws Exception;
 
     Page<UserResponseDTO> getAllUsers(Pageable pageable);
+
+    Page<UserResponseDTO> getAllActiveUsers(Pageable pageable);
 }
 //
