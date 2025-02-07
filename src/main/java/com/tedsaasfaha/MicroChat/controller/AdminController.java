@@ -54,5 +54,15 @@ public class AdminController {
         Page<UserResponseDTO> users = userService.getAllUsers(pageable);
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/users/active")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<UserResponseDTO>> getAllActiveUsers(
+            Pageable pageable
+    ) {
+
+        Page<UserResponseDTO> activeUsers = userService.getAllActiveUsers(pageable);
+        return ResponseEntity.ok(activeUsers);
+    }
 }
 //
