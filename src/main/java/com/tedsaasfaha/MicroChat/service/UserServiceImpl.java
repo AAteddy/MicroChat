@@ -1,16 +1,19 @@
+
 package com.tedsaasfaha.MicroChat.service;
 
 
 import com.tedsaasfaha.MicroChat.dto.AuthRequestDTO;
 import com.tedsaasfaha.MicroChat.dto.AuthResponseDTO;
-import com.tedsaasfaha.MicroChat.dto.UserRegistrationDTO;
+import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserUpdateDTO;
 import com.tedsaasfaha.MicroChat.exception.ResourceNotFoundException;
-import com.tedsaasfaha.MicroChat.model.Role;
+//import com.tedsaasfaha.MicroChat.mapper.UserMapper;
 import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.repository.UserRepository;
 import com.tedsaasfaha.MicroChat.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
@@ -47,15 +50,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateProfile(UserUpdateDTO updateDTO, String email) {
+    public UserResponseDTO updateProfile(UserUpdateDTO updateDTO, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
         user.setPassword(passwordEncoder.encode(updateDTO.newPassword()));
-        return userRepository.save(user);
+
+
+        return toUserResponseDTO(userRepository.save(user));
     }
 
     public AuthResponseDTO createAuthenticationToken(AuthRequestDTO authRequestDTO) throws Exception {
-
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -89,4 +93,21 @@ public class UserService {
 
         return new AuthResponseDTO(accessToken, refreshToken);
     }
+
+    @Override
+    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
+        Page<User> users = userRepository.findAllUsers(pageable);
+
+        return users.map(this::toUserResponseDTO);
+    }
+
+    private UserResponseDTO toUserResponseDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().name()
+        );
+    }
 }
+//
