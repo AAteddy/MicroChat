@@ -1,6 +1,8 @@
+
 package com.tedsaasfaha.MicroChat.controller;
 
 
+import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserUpdateDTO;
 import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.service.UserService;
@@ -21,11 +23,12 @@ public class UserController {
     private UserService userService;
 
     @PutMapping("/profile")
-    public ResponseEntity<User> updateProfile(
+    public ResponseEntity<UserResponseDTO> updateProfile(
             @RequestBody UserUpdateDTO updateDTO,
             @AuthenticationPrincipal UserDetails userDetails
             ) {
-        User updatedUser = userService.updateProfile(updateDTO, userDetails.getUsername());
+        UserResponseDTO updatedUser = userService.updateProfile(updateDTO, userDetails.getUsername());
         return ResponseEntity.ok(updatedUser);
     }
 }
+//

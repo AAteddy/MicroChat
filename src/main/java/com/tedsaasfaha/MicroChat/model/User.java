@@ -1,3 +1,4 @@
+
 package com.tedsaasfaha.MicroChat.model;
 
 
@@ -36,6 +37,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    // UserDetails methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(
@@ -67,6 +69,5 @@ public class User implements UserDetails {
         return true;
     }
 
-    // UserDetails methods
-
 }
+//

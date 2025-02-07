@@ -1,3 +1,4 @@
+
 package com.tedsaasfaha.MicroChat.dto;
 
 
@@ -8,3 +9,4 @@ public record AuthRequestDTO(
         @NotBlank(message = "Password is required") String password
 ) {
 }
+//

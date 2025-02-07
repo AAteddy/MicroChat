@@ -1,3 +1,4 @@
+
 package com.tedsaasfaha.MicroChat.dto;
 
 import jakarta.validation.constraints.NotBlank;
@@ -8,3 +9,4 @@ public record UserUpdateDTO(
         @Size(min = 6, message = "Password must be at least 6 characters long") String newPassword
 ) {
 }
+//
