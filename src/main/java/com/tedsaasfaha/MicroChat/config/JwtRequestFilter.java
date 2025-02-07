@@ -1,6 +1,8 @@
+
 package com.tedsaasfaha.MicroChat.config;
 
 
+import com.tedsaasfaha.MicroChat.service.CustomUserDetailsService;
 import com.tedsaasfaha.MicroChat.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,7 +26,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailsService userDetailsService;
+
+//    public JwtRequestFilter(
+//            JwtUtil jwtUtil,
+//            UserDetailsService userDetailsService
+//    ) {
+//        this.jwtUtil = jwtUtil;
+//        this.userDetailsService = userDetailsService;
+//    }
 
 
     @Override
@@ -56,3 +66,4 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+//
