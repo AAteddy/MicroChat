@@ -1,11 +1,15 @@
+
 package com.tedsaasfaha.MicroChat.controller;
 
 
 import com.tedsaasfaha.MicroChat.dto.UserRegistrationDTO;
+import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
 import com.tedsaasfaha.MicroChat.model.Role;
 import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,8 +47,12 @@ public class AdminController {
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> getAllUsers() {
-        // Logic to fetch all users (admin-only)
-        return null;
+    public ResponseEntity<Page<UserResponseDTO>> getAllUsers(
+            Pageable pageable
+    ) {
+
+        Page<UserResponseDTO> users = userService.getAllUsers(pageable);
+        return ResponseEntity.ok(users);
     }
 }
+//
