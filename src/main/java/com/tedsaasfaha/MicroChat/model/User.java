@@ -37,6 +37,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    private boolean isDeleted = false; // Soft delete flag
+
     // UserDetails methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
