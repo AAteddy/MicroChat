@@ -72,5 +72,24 @@ public class AuthController {
         AuthResponseDTO response = userService.createAuthRefreshToken(responseDTO);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @RequestParam String email
+    ) {
+
+        userService.initiatePasswordReset(email);
+        return ResponseEntity.ok("Password reset email sent.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestParam String token,
+            @RequestParam String newPassword
+    ) {
+
+        userService.completePasswordReset(token, newPassword);
+        return ResponseEntity.ok("Password reset successfully.");
+    }
 }
 //
