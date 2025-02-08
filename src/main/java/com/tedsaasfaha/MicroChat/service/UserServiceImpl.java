@@ -7,7 +7,9 @@ import com.tedsaasfaha.MicroChat.dto.AuthResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserUpdateDTO;
 import com.tedsaasfaha.MicroChat.exception.ResourceNotFoundException;
+import com.tedsaasfaha.MicroChat.model.PasswordResetToken;
 import com.tedsaasfaha.MicroChat.model.User;
+import com.tedsaasfaha.MicroChat.repository.PasswordResetTokenRepository;
 import com.tedsaasfaha.MicroChat.repository.UserRepository;
 import com.tedsaasfaha.MicroChat.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,6 +42,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    private EmailService emailService;
 
 
     public boolean isExist(String email) {
@@ -115,6 +125,42 @@ public class UserServiceImpl implements UserService {
 
         user.setDeleted(true);
         userRepository.save(user);
+    }
+
+    @Override
+    public void initiatePasswordReset(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User not found,"));
+
+        // Generate a unique token
+        String token = UUID.randomUUID().toString();
+
+        // Create and save a token
+        PasswordResetToken resetToken = new PasswordResetToken(token, user);
+        passwordResetTokenRepository.save(resetToken);
+
+        // Send the token via email
+        emailService.sendPasswordResetEmail(user.getEmail(), token);
+    }
+
+    @Override
+    public void completePasswordReset(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid token."));
+
+        // Check if the token has expired
+        if (resetToken.isExpired()) {
+            throw new ResourceNotFoundException("Token has expired.");
+        }
+
+        // Update the user's password
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Delete the token
+        passwordResetTokenRepository.delete(resetToken);
     }
 
 
