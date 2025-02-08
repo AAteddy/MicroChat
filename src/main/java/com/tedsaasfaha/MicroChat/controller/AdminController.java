@@ -64,5 +64,16 @@ public class AdminController {
         Page<UserResponseDTO> activeUsers = userService.getAllActiveUsers(pageable);
         return ResponseEntity.ok(activeUsers);
     }
+
+    @DeleteMapping("/users/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteUser(
+            @PathVariable Long userId
+    ) {
+
+        userService.removeUser(userId);
+        return ResponseEntity.ok("Successfully removed user.");
+    }
+
 }
 //
