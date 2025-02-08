@@ -107,6 +107,16 @@ public class UserServiceImpl implements UserService {
         return activeUsers.map(this::toUserResponseDTO);
     }
 
+    @Override
+    public void removeUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User not found with Id: " + userId));
+
+        user.setDeleted(true);
+        userRepository.save(user);
+    }
+
 
     private UserResponseDTO toUserResponseDTO(User user) {
         return new UserResponseDTO(

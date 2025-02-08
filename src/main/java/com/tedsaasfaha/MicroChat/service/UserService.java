@@ -24,5 +24,7 @@ public interface UserService {
     Page<UserResponseDTO> getAllUsers(Pageable pageable);
 
     Page<UserResponseDTO> getAllActiveUsers(Pageable pageable);
+
+    void removeUser(Long userId);
 }
 //
