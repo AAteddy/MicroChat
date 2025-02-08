@@ -26,5 +26,9 @@ public interface UserService {
     Page<UserResponseDTO> getAllActiveUsers(Pageable pageable);
 
     void removeUser(Long userId);
+
+    void initiatePasswordReset(String email);
+
+    void completePasswordReset(String token, String newPassword);
 }
 //
