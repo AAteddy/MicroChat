@@ -31,7 +31,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         // Apply rate limiting only to /forgot-password endpoint
-        if (request.getRequestURI().equals("/api/auth/forgot-password")) {
+        if (request.getRequestURI().equals("/api/v1/auth/forgot-password")) {
             String clientIp = request.getRemoteAddr();
 
 
