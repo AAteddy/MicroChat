@@ -2,10 +2,7 @@
 package com.tedsaasfaha.MicroChat.service;
 
 
-import com.tedsaasfaha.MicroChat.dto.AuthRequestDTO;
-import com.tedsaasfaha.MicroChat.dto.AuthResponseDTO;
-import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
-import com.tedsaasfaha.MicroChat.dto.UserUpdateDTO;
+import com.tedsaasfaha.MicroChat.dto.*;
 import com.tedsaasfaha.MicroChat.exception.ResourceNotFoundException;
 import com.tedsaasfaha.MicroChat.exception.TooManyRequestsException;
 import com.tedsaasfaha.MicroChat.model.PasswordResetToken;
@@ -111,6 +108,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDTO getUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User not found with Id: " + userId));
+
+        return toUserResponseDTO(user);
+    }
+
+    @Override
     public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
         Page<User> users = userRepository.findAllUsers(pageable);
 
@@ -118,10 +124,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserResponseDTO> getAllActiveUsers(Pageable pageable) {
+    public PagedResponse<UserResponseDTO> getAllActiveUsers(Pageable pageable) {
         Page<User> activeUsers = userRepository.findAllActiveUsers(pageable);
-
-        return activeUsers.map(this::toUserResponseDTO);
+        return new PagedResponse<>(
+                activeUsers.map(this::toUserResponseDTO).getContent(),
+                activeUsers.getNumber(),
+                activeUsers.getSize(),
+                activeUsers.getTotalElements(),
+                activeUsers.getTotalPages()
+        );
     }
 
     @Override
@@ -178,12 +189,14 @@ public class UserServiceImpl implements UserService {
 
 
     private UserResponseDTO toUserResponseDTO(User user) {
-        return new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole().name()
-        );
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setId(user.getId());
+        responseDTO.setName(user.getName());
+        responseDTO.setEmail(user.getEmail());
+        responseDTO.setRole(user.getRole().name());
+//        responseDTO.addLinks();
+
+        return responseDTO;
     }
 }
 //
