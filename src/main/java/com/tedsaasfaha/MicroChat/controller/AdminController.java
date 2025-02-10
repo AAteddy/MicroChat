@@ -9,6 +9,7 @@ import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,11 +59,12 @@ public class AdminController {
     @GetMapping("/users/active")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserResponseDTO>> getAllActiveUsers(
-            Pageable pageable
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
 
-        Page<UserResponseDTO> activeUsers = userService.getAllActiveUsers(pageable);
-        return ResponseEntity.ok(activeUsers);
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(userService.getAllActiveUsers(pageable));
     }
 
     @DeleteMapping("/users/{userId}")
