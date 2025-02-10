@@ -1,10 +1,7 @@
 
 package com.tedsaasfaha.MicroChat.service;
 
-import com.tedsaasfaha.MicroChat.dto.AuthRequestDTO;
-import com.tedsaasfaha.MicroChat.dto.AuthResponseDTO;
-import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
-import com.tedsaasfaha.MicroChat.dto.UserUpdateDTO;
+import com.tedsaasfaha.MicroChat.dto.*;
 import com.tedsaasfaha.MicroChat.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +20,14 @@ public interface UserService {
 
     Page<UserResponseDTO> getAllUsers(Pageable pageable);
 
-    Page<UserResponseDTO> getAllActiveUsers(Pageable pageable);
+    PagedResponse<UserResponseDTO> getAllActiveUsers(Pageable pageable);
 
     void removeUser(Long userId);
 
     void initiatePasswordReset(String email);
 
     void completePasswordReset(String token, String newPassword);
+
+    UserResponseDTO getUserById(Long userId);
 }
 //

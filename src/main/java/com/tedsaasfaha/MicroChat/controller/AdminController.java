@@ -2,6 +2,7 @@
 package com.tedsaasfaha.MicroChat.controller;
 
 
+import com.tedsaasfaha.MicroChat.dto.PagedResponse;
 import com.tedsaasfaha.MicroChat.dto.UserRegistrationDTO;
 import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
 import com.tedsaasfaha.MicroChat.model.Role;
@@ -56,16 +57,6 @@ public class AdminController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/users/active")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserResponseDTO>> getAllActiveUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(userService.getAllActiveUsers(pageable));
-    }
 
     @DeleteMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
