@@ -2,7 +2,7 @@ package com.tedsaasfaha.MicroChat.dto;
 
 import java.util.List;
 
-public record PageResponse<T>(
+public record PagedResponse<T>(
         List<T> data,
         int page,
         int size,
