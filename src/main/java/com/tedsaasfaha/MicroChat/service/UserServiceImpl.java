@@ -7,12 +7,15 @@ import com.tedsaasfaha.MicroChat.dto.AuthResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserResponseDTO;
 import com.tedsaasfaha.MicroChat.dto.UserUpdateDTO;
 import com.tedsaasfaha.MicroChat.exception.ResourceNotFoundException;
+import com.tedsaasfaha.MicroChat.exception.TooManyRequestsException;
 import com.tedsaasfaha.MicroChat.model.PasswordResetToken;
 import com.tedsaasfaha.MicroChat.model.User;
 import com.tedsaasfaha.MicroChat.repository.PasswordResetTokenRepository;
 import com.tedsaasfaha.MicroChat.repository.UserRepository;
 import com.tedsaasfaha.MicroChat.util.JwtUtil;
+import io.github.bucket4j.Bucket;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,6 +51,10 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    @Qualifier("userRateLimiter")
+    private Bucket userRateLimiter;
 
 
     public boolean isExist(String email) {
@@ -129,6 +136,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void initiatePasswordReset(String email) {
+        // Check user-based rate limit
+        if (!userRateLimiter.tryConsume(1)) {
+            throw new TooManyRequestsException(
+                    "Too many password reset requests for this email.");
+        }
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User not found,"));
